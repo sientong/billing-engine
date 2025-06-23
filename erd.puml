@@ -1,0 +1,59 @@
+@startuml Billing Engine
+
+title Billing Engine - ERD
+
+entity Users {
+    + id : UUID <<primary key>>
+    --
+    * name : String
+    * is_delinquent : Boolean
+    * is_active : Boolean
+    * created_at : Timestamp
+    * updated_at : Timestamp
+}
+
+entity Loans {
+    + id : UUID <<primary key>>
+    --
+    * user_id : UUID <<foreign key>>
+    * amount : Decimal
+    * interest_rate : Decimal
+    * term_months : Integer
+    * total_payment : Decimal
+    * outstanding_balance : Decimal
+    * status : String <<e.g. active, paid, defaulted>>
+    * created_at : Timestamp
+    * updated_at : Timestamp
+}
+
+entity BillingSchedules {
+    + id : UUID <<primary key>>
+    --
+    * loan_id : UUID <<foreign key>>
+    * payment_due_date : Timestamp
+    * amount_due : Decimal
+    * status : String <<e.g. pending, paid, overdue>>
+    * created_at : Timestamp
+    * updated_at : Timestamp
+}
+
+entity Payments {
+    + id : UUID <<primary key>>
+    --
+    * user_id : UUID <<foreign key>>
+    * loan_id : UUID <<foreign key>>
+    * billing_schedule_id : UUID <<foreign key>>
+    * amount : Decimal
+    * payment_date : Timestamp
+    * payment_method : String <<e.g. bank transfer, QRIS>>
+    * status : String <<e.g. pending, completed, failed>>
+    * created_at : Timestamp
+    * updated_at : Timestamp
+}
+
+Users ||--o{ Loans : has
+Loans ||--|{ BillingSchedules : has
+BillingSchedules ||--o{ Payments : has
+Payments ||--o{ Users : made_by
+
+@enduml
