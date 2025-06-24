@@ -6,6 +6,7 @@ entity Users {
     + id : UUID <<primary key>>
     --
     * name : String
+    * identity_number : String <<unique>>
     * is_delinquent : Boolean
     * is_active : Boolean
     * created_at : Timestamp

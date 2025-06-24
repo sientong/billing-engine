@@ -53,19 +53,21 @@ At least the following methods to be implemented:
 
 2. Design workflow diagram
 
-3. Create method to generate loan
+3. Create migration script
 
-4. Create method to generate billing schedule
+4. Create method to generate loan
 
-5. Create method to check for delinquent
+5. Create method to generate billing schedule
 
-6. Create method to make payment
+6. Create method to check for delinquent
 
-7. Create method to get outstanding balance
+7. Create method to make payment
 
-8. Generate billing schedules upon loan generation
+8. Create method to get outstanding balance
 
-9. Upon making payment: 
+9. Generate billing schedules upon loan generation
+
+10. Upon making payment: 
 
     - update outstanding amount
     
@@ -73,6 +75,6 @@ At least the following methods to be implemented:
     
     - billing overdue has to be paid in full
 
-10. Create scheduler triggered every biling schedule to check for delinquent status
+11. Create scheduler triggered every biling schedule to check for delinquent status
 
 ## Test scenarios
