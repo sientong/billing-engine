@@ -6,7 +6,7 @@ import (
 )
 
 type UserService interface {
-	CreateUser(ctx context.Context, req *pb.CreateUserRequest) *pb.UserResponse
-	// UpdateDeliquentStatus(ctx context.Context, req *pb.CreateUserRequest) *pb.UserResponse
-	// IsDelinquent(ctx context.Context, req *pb.CreateUserRequest) *pb.UserResponse
+	CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error)
+	UpdateDeliquentStatus(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error)
+	IsDelinquent(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error)
 }

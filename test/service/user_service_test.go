@@ -20,9 +20,31 @@ var returnUser = domain.User{
 	UpdatedAt:      "2024-01-01T00:00:00Z",
 }
 
+var firstBillingSchedule = domain.BillingSchedule{
+	ID:             "billing1",
+	LoanID:         "loan1",
+	PaymentDueDate: "2024-01-01T00:00:00Z",
+	AmountDue:      100.0,
+	Status:         "pending",
+}
+
+var secondBillingSchedule = domain.BillingSchedule{
+	ID:             "billing2",
+	LoanID:         "loan1",
+	PaymentDueDate: "2024-01-01T00:00:00Z",
+	AmountDue:      100.0,
+	Status:         "pending",
+}
+
+var returnBillingSchedules = []domain.BillingSchedule{firstBillingSchedule, secondBillingSchedule}
+
 func TestUserService_CreateNewUser(t *testing.T) {
 	mockRepo := &MockUserRepository{
 		ReturnUser: returnUser,
+	}
+
+	mockBillingRepo := &MockBillingScheduleRepo{
+		ReturnBillingSchedules: returnBillingSchedules,
 	}
 
 	mockDB, mock, _ := sqlmock.New()
@@ -30,14 +52,17 @@ func TestUserService_CreateNewUser(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectCommit()
-	service := service.NewUserService(mockRepo, mockDB)
+	service := service.NewUserService(mockRepo, mockBillingRepo, mockDB)
 
 	req := &pb.CreateUserRequest{
 		Name:           "John Doe",
 		IdentityNumber: "123456789",
 	}
 
-	resp := service.CreateUser(context.Background(), req)
+	resp, err := service.CreateUser(context.Background(), req)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
 
 	if resp.Name != "John Doe" {
 		t.Errorf("Expected name to be 'John Doe', got %s", resp.Name)
@@ -50,6 +75,10 @@ func TestUserService_CreateNewUser(t *testing.T) {
 func TestUserService_UpdateDelinquentStatus(t *testing.T) {
 	returnUser.IsDelinquent = true
 
+	mockBillingRepo := &MockBillingScheduleRepo{
+		ReturnBillingSchedules: returnBillingSchedules,
+	}
+
 	mockRepo := &MockUserRepository{
 		ReturnUser: returnUser,
 	}
@@ -59,14 +88,16 @@ func TestUserService_UpdateDelinquentStatus(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectCommit()
-	service := service.NewUserService(mockRepo, mockDB)
+	service := service.NewUserService(mockRepo, mockBillingRepo, mockDB)
 
 	req := &pb.UpdateDeliquentStatusRequest{
 		IdentityNumber: "123456789",
-		IsDelinquent:   true,
 	}
 
-	resp := service.UpdateDeliquentStatus(context.Background(), req)
+	resp, err := service.UpdateDeliquentStatus(context.Background(), req)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
 
 	if resp.IdentityNumber != "123456789" {
 		t.Errorf("Expected identity number to be '123456789', got %s", resp.IdentityNumber)
@@ -77,6 +108,11 @@ func TestUserService_UpdateDelinquentStatus(t *testing.T) {
 }
 
 func TestUserService_IsDelinquent(t *testing.T) {
+
+	mockBillingRepo := &MockBillingScheduleRepo{
+		ReturnBillingSchedules: returnBillingSchedules,
+	}
+
 	mockRepo := &MockUserRepository{
 		ReturnUser: returnUser,
 	}
@@ -86,13 +122,16 @@ func TestUserService_IsDelinquent(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectCommit()
-	service := service.NewUserService(mockRepo, mockDB)
+	service := service.NewUserService(mockRepo, mockBillingRepo, mockDB)
 
 	req := &pb.GetDeliquencyStatusRequest{
 		IdentityNumber: "123456789",
 	}
 
-	resp := service.IsDelinquent(context.Background(), req)
+	resp, err := service.IsDelinquent(context.Background(), req)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
 
 	if resp.IsDelinquent != false {
 		t.Errorf("Expected deliquent status to be false, got %t", resp.IsDelinquent)

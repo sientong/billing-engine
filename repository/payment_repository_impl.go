@@ -13,7 +13,7 @@ func NewPaymentRepository() *PaymentRepositoryImpl {
 	return &PaymentRepositoryImpl{}
 }
 
-func (p *PaymentRepositoryImpl) CreatePayment(ctx context.Context, tx *sql.Tx, payment domain.Payment) domain.Payment {
+func (p *PaymentRepositoryImpl) MakePayment(ctx context.Context, tx *sql.Tx, payment domain.Payment) domain.Payment {
 	SQL := `INSERT INTO payments (user_id, loan_id, billing_schedule_id, amount, payment_date, payment_method, status) VALUES ($1, $2, $3, $4, %5, $6, $7) RETURNING id, created_at, updated_at`
 
 	err := tx.QueryRowContext(ctx, SQL, payment.UserID, payment.LoanID, payment.BillingScheduleID, payment.Amount, payment.PaymentDate, payment.PaymentMethod, payment.Status).
@@ -37,7 +37,7 @@ func (p *PaymentRepositoryImpl) UpdatePayment(ctx context.Context, tx *sql.Tx, p
 	return payment
 }
 
-func (p *PaymentRepositoryImpl) GetPaymentsByLoanId(ctx context.Context, tx *sql.Tx, loanId int64) []domain.Payment {
+func (p *PaymentRepositoryImpl) GetPaymentsByLoanId(ctx context.Context, tx *sql.Tx, loanId string) []domain.Payment {
 	var payments []domain.Payment
 
 	SQL := `SELECT id, user_id, loan_id, billing_schedule_id, amount, payment_date, payment_method, payment_status, created_at, updated_at
@@ -60,7 +60,7 @@ func (p *PaymentRepositoryImpl) GetPaymentsByLoanId(ctx context.Context, tx *sql
 	return payments
 }
 
-func (p *PaymentRepositoryImpl) GetPaymentsByUserId(ctx context.Context, tx *sql.Tx, userId int64) []domain.Payment {
+func (p *PaymentRepositoryImpl) GetPaymentsByUserId(ctx context.Context, tx *sql.Tx, userId string) []domain.Payment {
 	var payments []domain.Payment
 
 	SQL := `SELECT id, user_id, loan_id, billing_schedule_id, amount, payment_date, payment_method, status, created_at, updated_at
@@ -83,7 +83,7 @@ func (p *PaymentRepositoryImpl) GetPaymentsByUserId(ctx context.Context, tx *sql
 	return payments
 }
 
-func (p *PaymentRepositoryImpl) GetPaymentById(ctx context.Context, tx *sql.Tx, paymentId int64) domain.Payment {
+func (p *PaymentRepositoryImpl) GetPaymentById(ctx context.Context, tx *sql.Tx, paymentId string) domain.Payment {
 	var payment domain.Payment
 	SQL := `SELECT id, user_id, loan_id, billing_schedule_id, amount, payment_date, payment_method, status, created_at, updated_at
 			FROM payments WHERE id = $1`

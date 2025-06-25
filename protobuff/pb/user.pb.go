@@ -76,7 +76,6 @@ func (x *CreateUserRequest) GetIdentityNumber() string {
 type UpdateDeliquentStatusRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	IdentityNumber string                 `protobuf:"bytes,1,opt,name=identity_number,json=identityNumber,proto3" json:"identity_number,omitempty"`
-	IsDelinquent   bool                   `protobuf:"varint,2,opt,name=is_delinquent,json=isDelinquent,proto3" json:"is_delinquent,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -116,13 +115,6 @@ func (x *UpdateDeliquentStatusRequest) GetIdentityNumber() string {
 		return x.IdentityNumber
 	}
 	return ""
-}
-
-func (x *UpdateDeliquentStatusRequest) GetIsDelinquent() bool {
-	if x != nil {
-		return x.IsDelinquent
-	}
-	return false
 }
 
 type GetDeliquencyStatusRequest struct {
@@ -320,10 +312,9 @@ const file_protobuff_user_proto_rawDesc = "" +
 	"\x14protobuff/user.proto\x12\x02pb\"P\n" +
 	"\x11CreateUserRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
-	"\x0fidentity_number\x18\x02 \x01(\tR\x0eidentityNumber\"l\n" +
+	"\x0fidentity_number\x18\x02 \x01(\tR\x0eidentityNumber\"G\n" +
 	"\x1cUpdateDeliquentStatusRequest\x12'\n" +
-	"\x0fidentity_number\x18\x01 \x01(\tR\x0eidentityNumber\x12#\n" +
-	"\ris_delinquent\x18\x02 \x01(\bR\fisDelinquent\"E\n" +
+	"\x0fidentity_number\x18\x01 \x01(\tR\x0eidentityNumber\"E\n" +
 	"\x1aGetDeliquencyStatusRequest\x12'\n" +
 	"\x0fidentity_number\x18\x01 \x01(\tR\x0eidentityNumber\"\xdb\x01\n" +
 	"\fUserResponse\x12\x0e\n" +

@@ -34,3 +34,18 @@ func (l *LoanRepositoryImpl) UpdateLoan(ctx context.Context, tx *sql.Tx, loan do
 
 	return loan
 }
+
+func (l *LoanRepositoryImpl) FindLoanById(ctx context.Context, tx *sql.Tx, loanId string) domain.Loan {
+
+	var loan domain.Loan
+	SQL := "SELECT * FROM loans WHERE id = $1"
+	err := tx.QueryRowContext(ctx, SQL, loanId).Scan(&loanId, &loan.UserID, &loan.Amount, &loan.InterestRate, &loan.TermMonths, &loan.TotalPayment, &loan.OutstandingBalance, &loan.Status, &loan.CreatedAt, &loan.UpdatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return domain.Loan{}
+		}
+		helper.PanicIfError(err)
+	}
+
+	return loan
+}

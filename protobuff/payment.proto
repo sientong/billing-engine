@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "protobuff/pb";
+
+service PaymentService {
+  rpc MakePayment(MakePaymentRequest) returns (MakePaymentResponse);
+}
+
+message MakePaymentRequest {
+    string loan_id = 1;
+    double amount = 2;
+    string payment_method = 3;
+}
+
+message MakePaymentResponse {
+    string payment_id = 1;
+    string loan_id = 2;
+    double amount = 3;
+    string status = 4;
+    string payment_date = 5;
+}

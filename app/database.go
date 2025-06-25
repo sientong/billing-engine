@@ -7,9 +7,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func setupTestDB() *sql.DB {
+func SetupDB() *sql.DB {
 
-	db, err := sql.Open("postgres", "user=postgres dbname=billing-engine-test sslmode=disable password=099052")
+	db, err := sql.Open("postgres", "user=postgres dbname=billing-engine sslmode=disable password=099052")
 	if err != nil {
 		panic(err)
 	}

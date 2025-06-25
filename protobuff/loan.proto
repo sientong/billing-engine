@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "protobuff/pb";
+
+service LoanService {
+  rpc CreateNewLoan(CreateNewLoanRequest) returns (LoanResponse);
+  rpc GetOutstanding(GetOutstandingRequest) returns (OutstandingResponse);
+}
+
+message CreateNewLoanRequest {
+    double amount = 1;
+    double interest_rate = 2;
+    int32 term_months = 3;
+    string user_id = 4;
+}
+
+message GetOutstandingRequest {
+    string loan_id = 1;
+}
+
+message LoanResponse {
+    string loan_id = 1;
+    string user_id = 2;
+    double amount = 3;
+    double interest_rate = 4;
+    int32 term_months = 5;
+    double total_payment = 6;
+    double outstanding_balance = 7;
+    string status = 8;
+    string created_at = 9;
+    string updated_at = 10;
+}
+
+message OutstandingResponse {
+  string user_id = 1;
+  string loan_id = 2;
+  double outstanding_balance = 3;
+}

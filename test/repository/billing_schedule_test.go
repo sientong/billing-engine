@@ -148,6 +148,8 @@ func TestBillingSchedule_GetBillingScheduleByUserId(t *testing.T) {
 
 	billingSchedules := repository.NewBillingScheduleRepo().GetBillingScheduleByUserId(ctx, tx, user.ID)
 
+	t.Logf(billingSchedules[0].CreatedAt)
+
 	err = tx.Commit()
 	if err != nil {
 		t.Fatalf("Failed to commit transaction: %v", err)
@@ -163,6 +165,10 @@ func TestBillingSchedule_GetBillingScheduleByUserId(t *testing.T) {
 
 	if billingSchedules[1].ID != secondBillingSchedule.ID {
 		t.Errorf("Expected second billing schedule ID to be %s, got %s", secondBillingSchedule.ID, billingSchedules[1].ID)
+	}
+
+	if billingSchedules[0].CreatedAt == billingSchedule.CreatedAt {
+		t.Errorf("Expected billing createdat %s", billingSchedule.CreatedAt)
 	}
 
 	test.TruncateAllTables(db)

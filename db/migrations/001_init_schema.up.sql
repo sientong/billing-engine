@@ -44,7 +44,7 @@ CREATE TABLE payments (
     loan_id UUID NOT NULL REFERENCES loans(id) ON DELETE CASCADE,
     billing_schedule_id UUID NOT NULL REFERENCES billing_schedules(id) ON DELETE CASCADE,
     amount NUMERIC(20, 2) NOT NULL,
-    payment_date TIMESTAMPTZ NOT NULL,
+    payment_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     payment_method TEXT NOT NULL CHECK (payment_method IN ('bank transfer', 'QRIS')),
     status TEXT NOT NULL CHECK (status IN ('pending', 'completed', 'failed')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

@@ -46,7 +46,8 @@ At least the following methods to be implemented:
 ### Protobuff
 
 protobuff/user.proto
-
+protobuff/payment.proto
+protobuff/loan.proto
 
 ## Steps
 

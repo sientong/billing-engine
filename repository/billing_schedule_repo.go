@@ -1,10 +1,14 @@
 package repository
 
-import "billing-engine/model/domain"
+import (
+	"billing-engine/model/domain"
+	"context"
+	"database/sql"
+)
 
 type BillingScheduleRepo interface {
-	CreateBillingSchedule(billingSchedule domain.BillingSchedule) domain.BillingSchedule
-	UpdateBillingSchedule(billingSchedule domain.BillingSchedule) domain.BillingSchedule
-	GetBillingScheduleByUserId(userId int64) []domain.BillingSchedule
-	GetBillingScheduleByLoanId(loanId int64) []domain.BillingSchedule
+	CreateBillingSchedule(ctx context.Context, tx *sql.Tx, billingSchedule domain.BillingSchedule) domain.BillingSchedule
+	UpdateBillingSchedule(ctx context.Context, tx *sql.Tx, billingSchedule domain.BillingSchedule) domain.BillingSchedule
+	GetBillingScheduleByUserId(ctx context.Context, tx *sql.Tx, userId string) []domain.BillingSchedule
+	GetBillingScheduleByLoanId(ctx context.Context, tx *sql.Tx, loanId string) []domain.BillingSchedule
 }

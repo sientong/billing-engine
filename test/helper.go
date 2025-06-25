@@ -119,7 +119,7 @@ func CreatePayment(db *sql.DB, userId string, loanId string, billingScheduleId s
 		PaymentMethod:     paymentMethod,
 	}
 
-	result := repo.CreatePayment(ctx, tx, newPayment)
+	result := repo.MakePayment(ctx, tx, newPayment)
 	if err := tx.Commit(); err != nil {
 		log.Fatalf("Failed to commit payment transaction: %v", err)
 		return domain.Payment{}, err

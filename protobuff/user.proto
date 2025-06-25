@@ -17,7 +17,6 @@ message CreateUserRequest {
 
 message UpdateDeliquentStatusRequest {
   string identity_number = 1;
-  bool is_delinquent = 2;
 }
 
 message GetDeliquencyStatusRequest {

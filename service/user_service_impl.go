@@ -7,19 +7,21 @@ import (
 	"billing-engine/repository"
 	"context"
 	"database/sql"
+	"time"
 )
 
 type UserServiceImpl struct {
 	pb.UnimplementedUserServiceServer
-	repo repository.UserRepository
-	DB   *sql.DB
+	repo        repository.UserRepository
+	billingRepo repository.BillingScheduleRepo
+	DB          *sql.DB
 }
 
-func NewUserService(repo repository.UserRepository, db *sql.DB) *UserServiceImpl {
-	return &UserServiceImpl{repo: repo, DB: db}
+func NewUserService(repo repository.UserRepository, billingRepo repository.BillingScheduleRepo, db *sql.DB) *UserServiceImpl {
+	return &UserServiceImpl{repo: repo, billingRepo: billingRepo, DB: db}
 }
 
-func (s *UserServiceImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) *pb.UserResponse {
+func (s *UserServiceImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error) {
 
 	user := domain.User{
 		Name:           req.Name,
@@ -42,20 +44,56 @@ func (s *UserServiceImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequ
 		IsActive:       createdUser.IsActive,
 		CreatedAt:      createdUser.CreatedAt,
 		UpdatedAt:      createdUser.UpdatedAt,
-	}
+	}, nil
 }
 
-func (s *UserServiceImpl) UpdateDeliquentStatus(ctx context.Context, req *pb.UpdateDeliquentStatusRequest) *pb.UserResponse {
-	user := domain.User{
-		IdentityNumber: req.IdentityNumber,
-		IsDelinquent:   req.IsDelinquent,
-	}
+func (s *UserServiceImpl) UpdateDeliquentStatus(ctx context.Context, req *pb.UpdateDeliquentStatusRequest) (*pb.UserResponse, error) {
 
 	tx, err := s.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
+	user, err := s.repo.FindByIdentityNumber(ctx, tx, req.IdentityNumber)
+	if err != nil {
+		helper.PanicIfError(err)
+	}
+
+	billingSchedules := s.billingRepo.GetBillingScheduleByUserId(ctx, tx, user.ID)
+
+	layout := time.RFC3339Nano
+
+	var unpaidCounter = 0
+	for _, billingSchedule := range billingSchedules {
+		parsedTime, err := time.Parse(layout, billingSchedule.CreatedAt)
+		if err != nil {
+			helper.PanicIfError(err)
+		}
+
+		now := time.Now()
+
+		// check how many unpaid billing before today
+		if parsedTime.Before(now) && billingSchedule.Status == "unpaid" {
+			unpaidCounter++
+		}
+	}
+
+	// don't change delinquent status if unpaid billing is less than two
+	if unpaidCounter < 2 {
+		return &pb.UserResponse{
+			Id:             user.ID,
+			Name:           user.Name,
+			IdentityNumber: user.IdentityNumber,
+			IsDelinquent:   user.IsDelinquent,
+			IsActive:       user.IsActive,
+			CreatedAt:      user.CreatedAt,
+			UpdatedAt:      user.UpdatedAt,
+		}, nil
+	}
+
+	// change delinquent status to true
+	user.IsDelinquent = true
 	updatedUser := s.repo.Update(ctx, tx, user)
+
 	return &pb.UserResponse{
 		Id:             updatedUser.ID,
 		Name:           updatedUser.Name,
@@ -64,10 +102,10 @@ func (s *UserServiceImpl) UpdateDeliquentStatus(ctx context.Context, req *pb.Upd
 		IsActive:       updatedUser.IsActive,
 		CreatedAt:      updatedUser.CreatedAt,
 		UpdatedAt:      updatedUser.UpdatedAt,
-	}
+	}, nil
 }
 
-func (s *UserServiceImpl) IsDelinquent(ctx context.Context, req *pb.GetDeliquencyStatusRequest) *pb.DeliquencyStatusResponse {
+func (s *UserServiceImpl) IsDelinquent(ctx context.Context, req *pb.GetDeliquencyStatusRequest) (*pb.DeliquencyStatusResponse, error) {
 
 	user := domain.User{
 		IdentityNumber: req.IdentityNumber,
@@ -85,5 +123,5 @@ func (s *UserServiceImpl) IsDelinquent(ctx context.Context, req *pb.GetDeliquenc
 	return &pb.DeliquencyStatusResponse{
 		IdentityNumber: foundUser.IdentityNumber,
 		IsDelinquent:   foundUser.IsDelinquent,
-	}
+	}, nil
 }
