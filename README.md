@@ -43,9 +43,10 @@ At least the following methods to be implemented:
 
 ![alt text](image.png)
 
-### API
-
 ### Protobuff
+
+protobuff/user.proto
+
 
 ## Steps
 
@@ -78,3 +79,28 @@ At least the following methods to be implemented:
 11. Create scheduler triggered every biling schedule to check for delinquent status
 
 ## Test scenarios
+
+```
+If create user with same identity number exists
+    then reject creation
+```
+
+```
+If create new loan
+    then calculate interest amount 
+        and populate # billing schedule 
+        based on total outstanding divided by 
+        term months 
+```
+
+```
+If check for deliquency status
+    then check for unpaid billing schedule 
+        for the past two weeks 
+```
+
+```
+If user wants to make payment
+    then ensure nominal is equal as outstanding 
+        unpaid amount billing schedule
+```

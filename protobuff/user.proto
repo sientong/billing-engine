@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "protobuff/pb";
+
+service UserService {
+  rpc CreateUser(CreateUserRequest) returns (UserResponse);
+  rpc UpdateDeliquentStatus(UpdateDeliquentStatusRequest) returns (UserResponse);
+  rpc GetDeliquencyStatus(GetDeliquencyStatusRequest) returns (DeliquencyStatusResponse);
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string identity_number = 2;
+}
+
+message UpdateDeliquentStatusRequest {
+  string identity_number = 1;
+  bool is_delinquent = 2;
+}
+
+message GetDeliquencyStatusRequest {
+  string identity_number = 1;
+}
+
+message UserResponse {
+  string id = 1;
+  string name = 2;
+  string identity_number = 3;
+  bool is_delinquent = 4;
+  bool is_active = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
+
+message DeliquencyStatusResponse {
+  string identity_number = 1;
+  bool is_delinquent = 2;
+}

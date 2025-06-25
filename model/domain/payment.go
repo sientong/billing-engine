@@ -8,7 +8,7 @@ type Payment struct {
 	Amount            float64 `json:"amount"`
 	PaymentDate       string  `json:"payment_date"`   // Date when the payment was made
 	PaymentMethod     string  `json:"payment_method"` // e.g., "credit_card", "bank_transfer"
-	PaymentStatus     string  `json:"payment_status"` // e.g., "completed", "pending", "failed"
+	Status            string  `json:"payment_status"` // e.g., "completed", "pending", "failed"
 	CreatedAt         string  `json:"created_at"`
 	UpdatedAt         string  `json:"updated_at"`
 }

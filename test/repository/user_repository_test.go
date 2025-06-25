@@ -1,4 +1,4 @@
-package test
+package repository_test
 
 import (
 	"billing-engine/repository"
@@ -91,9 +91,9 @@ func TestUserRepo_FindUserByIdentityNumber(t *testing.T) {
 }
 
 func TestUserRepo_UpdateUser(t *testing.T) {
+
 	db := test.SetupTestDB()
 	defer db.Close()
-	test.TruncateUsersTable(db)
 
 	// Create a user to update
 	user, err := test.CreateUser(db)

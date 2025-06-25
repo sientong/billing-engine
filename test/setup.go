@@ -1,9 +1,6 @@
 package test
 
 import (
-	"billing-engine/model/domain"
-	"billing-engine/repository"
-	"context"
 	"database/sql"
 	"log"
 	"os"
@@ -52,6 +49,8 @@ func SetupTestDB() *sql.DB {
 		log.Fatal(err)
 	}
 
+	TruncateAllTables(db)
+
 	return db
 }
 
@@ -99,33 +98,4 @@ func TruncateAllTables(db *sql.DB) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func CreateUser(db *sql.DB) (domain.User, error) {
-
-	ctx := context.Background()
-	tx, err := db.BeginTx(ctx, nil)
-	if err != nil {
-		log.Fatalf("Failed to begin transaction: %v", err)
-		return domain.User{}, err
-	}
-
-	defer tx.Rollback()
-
-	repo := repository.NewUserRepository()
-	newUser := domain.User{
-		Name:           "John Doe",
-		IdentityNumber: "123456789",
-		IsActive:       true,
-		IsDelinquent:   false,
-	}
-
-	result := repo.Create(ctx, tx, newUser)
-
-	if err := tx.Commit(); err != nil {
-		log.Fatalf("Failed to commit transaction: %v", err)
-		return domain.User{}, err
-	}
-
-	return result, nil
 }
