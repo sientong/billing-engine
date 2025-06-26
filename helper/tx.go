@@ -6,10 +6,9 @@ func CommitOrRollback(tx *sql.Tx) {
 	err := recover()
 	if err != nil {
 		errorRollback := tx.Rollback()
-		PanicIfError(errorRollback)
-		panic(err)
+		CheckErrorOrReturn(errorRollback)
 	} else {
 		errorCommit := tx.Commit()
-		PanicIfError(errorCommit)
+		CheckErrorOrReturn(errorCommit)
 	}
 }

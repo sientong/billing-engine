@@ -8,6 +8,9 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type UserServiceImpl struct {
@@ -31,10 +34,13 @@ func (s *UserServiceImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequ
 	}
 
 	tx, err := s.DB.Begin()
-	helper.PanicIfError(err)
+	helper.CheckErrorOrReturn(err)
 	defer helper.CommitOrRollback(tx)
 
-	createdUser := s.repo.Create(ctx, tx, user)
+	createdUser, err := s.repo.Create(ctx, tx, user)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to create user: %v", err)
+	}
 
 	return &pb.UserResponse{
 		Id:             createdUser.ID,
@@ -50,15 +56,18 @@ func (s *UserServiceImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequ
 func (s *UserServiceImpl) UpdateDeliquentStatus(ctx context.Context, req *pb.UpdateDeliquentStatusRequest) (*pb.UserResponse, error) {
 
 	tx, err := s.DB.Begin()
-	helper.PanicIfError(err)
+	helper.CheckErrorOrReturn(err)
 	defer helper.CommitOrRollback(tx)
 
 	user, err := s.repo.FindByIdentityNumber(ctx, tx, req.IdentityNumber)
 	if err != nil {
-		helper.PanicIfError(err)
+		return nil, status.Errorf(codes.Internal, "Failed to get user by identity number: %v", err)
 	}
 
-	billingSchedules := s.billingRepo.GetBillingScheduleByUserId(ctx, tx, user.ID)
+	billingSchedules, err := s.billingRepo.GetBillingScheduleByUserId(ctx, tx, user.ID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to get billing schedule by user id: %v", err)
+	}
 
 	layout := time.RFC3339Nano
 
@@ -66,7 +75,8 @@ func (s *UserServiceImpl) UpdateDeliquentStatus(ctx context.Context, req *pb.Upd
 	for _, billingSchedule := range billingSchedules {
 		parsedTime, err := time.Parse(layout, billingSchedule.CreatedAt)
 		if err != nil {
-			helper.PanicIfError(err)
+			helper.CheckErrorOrReturn(err)
+			return nil, status.Errorf(codes.Internal, "Failed to parse billing schedule creation time: %v", err)
 		}
 
 		now := time.Now()
@@ -92,7 +102,10 @@ func (s *UserServiceImpl) UpdateDeliquentStatus(ctx context.Context, req *pb.Upd
 
 	// change delinquent status to true
 	user.IsDelinquent = true
-	updatedUser := s.repo.Update(ctx, tx, user)
+	updatedUser, err := s.repo.Update(ctx, tx, user)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to update delinquent status: %v", err)
+	}
 
 	return &pb.UserResponse{
 		Id:             updatedUser.ID,
@@ -112,12 +125,13 @@ func (s *UserServiceImpl) IsDelinquent(ctx context.Context, req *pb.GetDeliquenc
 	}
 
 	tx, err := s.DB.Begin()
-	helper.PanicIfError(err)
+	helper.CheckErrorOrReturn(err)
 	defer helper.CommitOrRollback(tx)
 
-	foundUser, err := s.repo.FindByIdentityNumber(ctx, nil, user.IdentityNumber)
+	foundUser, err := s.repo.FindByIdentityNumber(ctx, tx, user.IdentityNumber)
 	if err != nil {
-		helper.PanicIfError(err)
+		helper.CheckErrorOrReturn(err)
+		return nil, status.Errorf(codes.Internal, "Failed to get user by identity number: %v", err)
 	}
 
 	return &pb.DeliquencyStatusResponse{

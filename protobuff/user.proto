@@ -7,7 +7,7 @@ option go_package = "protobuff/pb";
 service UserService {
   rpc CreateUser(CreateUserRequest) returns (UserResponse);
   rpc UpdateDeliquentStatus(UpdateDeliquentStatusRequest) returns (UserResponse);
-  rpc GetDeliquencyStatus(GetDeliquencyStatusRequest) returns (DeliquencyStatusResponse);
+  rpc IsDelinquent(GetDeliquencyStatusRequest) returns (DeliquencyStatusResponse);
 }
 
 message CreateUserRequest {

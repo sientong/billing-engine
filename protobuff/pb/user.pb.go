@@ -329,12 +329,12 @@ const file_protobuff_user_proto_rawDesc = "" +
 	"updated_at\x18\a \x01(\tR\tupdatedAt\"h\n" +
 	"\x18DeliquencyStatusResponse\x12'\n" +
 	"\x0fidentity_number\x18\x01 \x01(\tR\x0eidentityNumber\x12#\n" +
-	"\ris_delinquent\x18\x02 \x01(\bR\fisDelinquent2\xe6\x01\n" +
+	"\ris_delinquent\x18\x02 \x01(\bR\fisDelinquent2\xdf\x01\n" +
 	"\vUserService\x125\n" +
 	"\n" +
 	"CreateUser\x12\x15.pb.CreateUserRequest\x1a\x10.pb.UserResponse\x12K\n" +
-	"\x15UpdateDeliquentStatus\x12 .pb.UpdateDeliquentStatusRequest\x1a\x10.pb.UserResponse\x12S\n" +
-	"\x13GetDeliquencyStatus\x12\x1e.pb.GetDeliquencyStatusRequest\x1a\x1c.pb.DeliquencyStatusResponseB\x0eZ\fprotobuff/pbb\x06proto3"
+	"\x15UpdateDeliquentStatus\x12 .pb.UpdateDeliquentStatusRequest\x1a\x10.pb.UserResponse\x12L\n" +
+	"\fIsDelinquent\x12\x1e.pb.GetDeliquencyStatusRequest\x1a\x1c.pb.DeliquencyStatusResponseB\x0eZ\fprotobuff/pbb\x06proto3"
 
 var (
 	file_protobuff_user_proto_rawDescOnce sync.Once
@@ -359,10 +359,10 @@ var file_protobuff_user_proto_goTypes = []any{
 var file_protobuff_user_proto_depIdxs = []int32{
 	0, // 0: pb.UserService.CreateUser:input_type -> pb.CreateUserRequest
 	1, // 1: pb.UserService.UpdateDeliquentStatus:input_type -> pb.UpdateDeliquentStatusRequest
-	2, // 2: pb.UserService.GetDeliquencyStatus:input_type -> pb.GetDeliquencyStatusRequest
+	2, // 2: pb.UserService.IsDelinquent:input_type -> pb.GetDeliquencyStatusRequest
 	3, // 3: pb.UserService.CreateUser:output_type -> pb.UserResponse
 	3, // 4: pb.UserService.UpdateDeliquentStatus:output_type -> pb.UserResponse
-	4, // 5: pb.UserService.GetDeliquencyStatus:output_type -> pb.DeliquencyStatusResponse
+	4, // 5: pb.UserService.IsDelinquent:output_type -> pb.DeliquencyStatusResponse
 	3, // [3:6] is the sub-list for method output_type
 	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

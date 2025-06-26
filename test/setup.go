@@ -28,7 +28,7 @@ func SetupTestDB() *sql.DB {
 	}
 
 	var root string
-	if filepath.Base(cwd) == "repository" {
+	if filepath.Base(cwd) == "repository" || filepath.Base(cwd) == "service" || filepath.Base(cwd) == "integration" {
 		root = filepath.Join(cwd, "../../")
 	} else {
 		root = cwd

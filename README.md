@@ -36,6 +36,68 @@ At least the following methods to be implemented:
 
 3. Allow the engine to be accessed either by RESTful API or gRPC
 
+## Running the program
+
+### Config database connection
+
+### Install grpcurl
+
+```brew install grpcurl```
+
+### Run the app
+
+```go run .```
+
+### Call grpcurl service
+
+#### Create new user
+
+```
+grpcurl -plaintext \
+  -d '{"name": "John Doe", "identityNumber": "123456789"}' \
+  localhost:50051 pb.UserService/CreateUser
+```
+
+#### Create new loan
+
+```
+grpcurl -plaintext \
+    -d '{"amount": 10000000.0, "interest_rate": 0.1, "term_months": 10, \
+    "user_id": "793b8e01-fd64-449a-89ed-f843b66bfd7e"}' \
+    localhost:50051 pb.LoanService/CreateNewLoan
+```
+
+#### Get outstanding
+
+```
+grpcurl -plaintext \                
+    -d '{"loan_id": "f3276d88-c816-48e5-be82-3966630d76fe"}' \
+    localhost:50051 pb.LoanService/GetOutstanding
+```
+
+#### Make payment
+
+```
+grpcurl -plaintext \
+  -d '{"loan_id": "f3276d88-c816-48e5-be82-3966630d76fe","amount":1001000.0, "payment_method": "bank transfer"}' \
+  localhost:50051 pb.PaymentService/MakePayment
+```
+
+#### Check for delinquent status
+
+```
+grpcurl -plaintext \
+    -d '{"identity_number": "123456789"}' \
+    localhost:50051 pb.UserService/IsDelinquent
+```
+
+#### Update delinquency status
+
+```
+grpcurl -plaintext \ 
+    -d '{"identity_number": "123456789"}' \
+    localhost:50051 pb.UserService/UpdateDeliquentStatus
+```
 
 ## Designs
 

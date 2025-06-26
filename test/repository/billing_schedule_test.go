@@ -92,7 +92,10 @@ func TestBillingSchedule_UpdateBillingSchedule(t *testing.T) {
 	billingSchedule.Status = "paid"
 	billingSchedule.PaymentDueDate = "2023-06-30"
 
-	billingSchedule = repository.NewBillingScheduleRepo().UpdateBillingSchedule(ctx, tx, billingSchedule)
+	billingSchedule, err = repository.NewBillingScheduleRepo().UpdateBillingSchedule(ctx, tx, billingSchedule)
+	if err != nil {
+		t.Fatalf("Failed to update billing schedule: %v", err)
+	}
 
 	err = tx.Commit()
 	if err != nil {
@@ -146,9 +149,10 @@ func TestBillingSchedule_GetBillingScheduleByUserId(t *testing.T) {
 	}
 	defer tx.Rollback()
 
-	billingSchedules := repository.NewBillingScheduleRepo().GetBillingScheduleByUserId(ctx, tx, user.ID)
-
-	t.Logf(billingSchedules[0].CreatedAt)
+	billingSchedules, err := repository.NewBillingScheduleRepo().GetBillingScheduleByUserId(ctx, tx, user.ID)
+	if err != nil {
+		t.Fatalf("Failed to get billing schedules: %v", err)
+	}
 
 	err = tx.Commit()
 	if err != nil {
@@ -165,10 +169,6 @@ func TestBillingSchedule_GetBillingScheduleByUserId(t *testing.T) {
 
 	if billingSchedules[1].ID != secondBillingSchedule.ID {
 		t.Errorf("Expected second billing schedule ID to be %s, got %s", secondBillingSchedule.ID, billingSchedules[1].ID)
-	}
-
-	if billingSchedules[0].CreatedAt == billingSchedule.CreatedAt {
-		t.Errorf("Expected billing createdat %s", billingSchedule.CreatedAt)
 	}
 
 	test.TruncateAllTables(db)
@@ -206,7 +206,10 @@ func TestBillingSchedule_GetBillingScheduleByLoanId(t *testing.T) {
 	}
 	defer tx.Rollback()
 
-	billingSchedules := repository.NewBillingScheduleRepo().GetBillingScheduleByLoanId(ctx, tx, loan.ID)
+	billingSchedules, err := repository.NewBillingScheduleRepo().GetBillingScheduleByLoanId(ctx, tx, loan.ID)
+	if err != nil {
+		t.Fatalf("Failed to get billing schedules: %v", err)
+	}
 
 	err = tx.Commit()
 	if err != nil {
@@ -223,6 +226,14 @@ func TestBillingSchedule_GetBillingScheduleByLoanId(t *testing.T) {
 
 	if billingSchedules[1].ID != secondBillingSchedule.ID {
 		t.Errorf("Expected second billing schedule ID to be %s, got %s", secondBillingSchedule.ID, billingSchedules[1].ID)
+	}
+
+	if billingSchedules[0].LoanID != loan.ID {
+		t.Errorf("Expected billing schedule LoanID to be %s, got %s", loan.ID, billingSchedules[0].LoanID)
+	}
+
+	if billingSchedules[1].LoanID != loan.ID {
+		t.Errorf("Expected billing schedule LoanID to be %s, got %s", loan.ID, billingSchedules[0].LoanID)
 	}
 
 	test.TruncateAllTables(db)

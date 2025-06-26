@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-var newLoan = domain.Loan{Amount: 1000000.0, InterestRate: 0.05, InterestAmount: 50000.0, TermMonths: 12, TotalPayment: 1050000.0, OutstandingBalance: 0.0, Status: "active"}
+var newLoan = domain.Loan{Amount: 1000000.0, InterestRate: 0.05, InterestAmount: 50000.0, TermMonths: 12, TotalPayment: 0.0, OutstandingBalance: 1050000.0, Status: "active"}
 
 func TestLoanRepository_CreateLoan(t *testing.T) {
 
@@ -92,7 +92,11 @@ func TestLoanRepository_UpdateLoan(t *testing.T) {
 
 	loan.TotalPayment = 105000.0
 	loan.OutstandingBalance = 900000.0
-	loan = repository.NewLoanRepository().UpdateLoan(ctx, tx, loan)
+	loan, err = repository.NewLoanRepository().UpdateLoan(ctx, tx, loan)
+
+	if err != nil {
+		t.Fatalf("Failed to update loan: %v", err)
+	}
 
 	if loan.TotalPayment != 105000.0 {
 		t.Errorf("Expected loan TotalPayment to be 105000.0, got %f", loan.TotalPayment)

@@ -21,7 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	UserService_CreateUser_FullMethodName            = "/pb.UserService/CreateUser"
 	UserService_UpdateDeliquentStatus_FullMethodName = "/pb.UserService/UpdateDeliquentStatus"
-	UserService_GetDeliquencyStatus_FullMethodName   = "/pb.UserService/GetDeliquencyStatus"
+	UserService_IsDelinquent_FullMethodName          = "/pb.UserService/IsDelinquent"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -30,7 +30,7 @@ const (
 type UserServiceClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	UpdateDeliquentStatus(ctx context.Context, in *UpdateDeliquentStatusRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	GetDeliquencyStatus(ctx context.Context, in *GetDeliquencyStatusRequest, opts ...grpc.CallOption) (*DeliquencyStatusResponse, error)
+	IsDelinquent(ctx context.Context, in *GetDeliquencyStatusRequest, opts ...grpc.CallOption) (*DeliquencyStatusResponse, error)
 }
 
 type userServiceClient struct {
@@ -61,10 +61,10 @@ func (c *userServiceClient) UpdateDeliquentStatus(ctx context.Context, in *Updat
 	return out, nil
 }
 
-func (c *userServiceClient) GetDeliquencyStatus(ctx context.Context, in *GetDeliquencyStatusRequest, opts ...grpc.CallOption) (*DeliquencyStatusResponse, error) {
+func (c *userServiceClient) IsDelinquent(ctx context.Context, in *GetDeliquencyStatusRequest, opts ...grpc.CallOption) (*DeliquencyStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeliquencyStatusResponse)
-	err := c.cc.Invoke(ctx, UserService_GetDeliquencyStatus_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserService_IsDelinquent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *userServiceClient) GetDeliquencyStatus(ctx context.Context, in *GetDeli
 type UserServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*UserResponse, error)
 	UpdateDeliquentStatus(context.Context, *UpdateDeliquentStatusRequest) (*UserResponse, error)
-	GetDeliquencyStatus(context.Context, *GetDeliquencyStatusRequest) (*DeliquencyStatusResponse, error)
+	IsDelinquent(context.Context, *GetDeliquencyStatusRequest) (*DeliquencyStatusResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -94,8 +94,8 @@ func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserReq
 func (UnimplementedUserServiceServer) UpdateDeliquentStatus(context.Context, *UpdateDeliquentStatusRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDeliquentStatus not implemented")
 }
-func (UnimplementedUserServiceServer) GetDeliquencyStatus(context.Context, *GetDeliquencyStatusRequest) (*DeliquencyStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetDeliquencyStatus not implemented")
+func (UnimplementedUserServiceServer) IsDelinquent(context.Context, *GetDeliquencyStatusRequest) (*DeliquencyStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsDelinquent not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -154,20 +154,20 @@ func _UserService_UpdateDeliquentStatus_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetDeliquencyStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_IsDelinquent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDeliquencyStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetDeliquencyStatus(ctx, in)
+		return srv.(UserServiceServer).IsDelinquent(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_GetDeliquencyStatus_FullMethodName,
+		FullMethod: UserService_IsDelinquent_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetDeliquencyStatus(ctx, req.(*GetDeliquencyStatusRequest))
+		return srv.(UserServiceServer).IsDelinquent(ctx, req.(*GetDeliquencyStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -188,8 +188,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_UpdateDeliquentStatus_Handler,
 		},
 		{
-			MethodName: "GetDeliquencyStatus",
-			Handler:    _UserService_GetDeliquencyStatus_Handler,
+			MethodName: "IsDelinquent",
+			Handler:    _UserService_IsDelinquent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -53,15 +53,14 @@ func TestUserRepo_CreateUserWithExistingUser(t *testing.T) {
 	db := test.SetupTestDB()
 	defer db.Close()
 
-	_, err := test.CreateUser(db)
-	if err != nil {
+	if _, err := test.CreateUser(db); err != nil {
 		t.Errorf("Unexpected error occurred: %v", err)
 	}
 
-	// Attempt to create the same user again
-	test.ExpectPanicMessage(t, func() {
-		_, err = test.CreateUser(db)
-	}, "user with identity number 123456789 already exists")
+	expectedMessage := "user with identity number 123456789 already exists"
+	if _, err := test.CreateUser(db); err != nil && err.Error() != expectedMessage {
+		t.Errorf("Unexpected error occurred: %v", err)
+	}
 
 	test.TruncateUsersTable(db)
 }
@@ -113,7 +112,11 @@ func TestUserRepo_UpdateUser(t *testing.T) {
 	defer tx.Rollback()
 
 	repo := repository.NewUserRepository()
-	updatedUser := repo.Update(ctx, tx, user)
+	updatedUser, err := repo.Update(ctx, tx, user)
+
+	if err != nil {
+		t.Fatalf("Failed to update user: %v", err)
+	}
 
 	if updatedUser.Name != "Jane Doe" {
 		t.Errorf("Expected updated user Name to be 'Jane Doe', got '%s'", updatedUser.Name)

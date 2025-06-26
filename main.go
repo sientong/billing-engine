@@ -13,6 +13,7 @@ import (
 	"syscall"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -39,13 +40,15 @@ func main() {
 	billingRepo := repository.NewBillingScheduleRepo()
 
 	userService := service.NewUserService(userRepo, billingRepo, db)
-	loanService := service.NewLoanService(loanRepo, db)
-	paymentService := service.NewPaymentService(paymentRepo, db)
+	loanService := service.NewLoanService(loanRepo, billingRepo, db)
+	paymentService := service.NewPaymentService(paymentRepo, loanRepo, billingRepo, db)
 
 	// Step 6: Register services
 	pb.RegisterUserServiceServer(grpcServer, userService)
 	pb.RegisterLoanServiceServer(grpcServer, loanService)
 	pb.RegisterPaymentServiceServer(grpcServer, paymentService)
+
+	reflection.Register(grpcServer)
 
 	// Step 7: Start gRPC server in goroutine
 	go func() {

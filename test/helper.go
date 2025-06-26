@@ -57,7 +57,7 @@ func CreateUser(db *sql.DB) (domain.User, error) {
 		IsDelinquent:   false,
 	}
 
-	result := repo.Create(ctx, tx, newUser)
+	result, err := repo.Create(ctx, tx, newUser)
 
 	if err := tx.Commit(); err != nil {
 		log.Fatalf("Failed to commit transaction: %v", err)
@@ -86,9 +86,10 @@ func CreateLoan(db *sql.DB, userId string, loanAmount float64, interestRate floa
 		OutstandingBalance: outstandingBalance,
 		TotalPayment:       totalPayment,
 		TermMonths:         termMonths,
+		Status:             "active",
 	}
 
-	result := repo.CreateLoan(ctx, tx, newLoan)
+	result, err := repo.CreateLoan(ctx, tx, newLoan)
 
 	if err := tx.Commit(); err != nil {
 		log.Fatalf("Failed to commit transaction: %v", err)
@@ -119,7 +120,7 @@ func CreatePayment(db *sql.DB, userId string, loanId string, billingScheduleId s
 		PaymentMethod:     paymentMethod,
 	}
 
-	result := repo.MakePayment(ctx, tx, newPayment)
+	result, err := repo.MakePayment(ctx, tx, newPayment)
 	if err := tx.Commit(); err != nil {
 		log.Fatalf("Failed to commit payment transaction: %v", err)
 		return domain.Payment{}, err
@@ -148,7 +149,7 @@ func CreateBillingSchedule(db *sql.DB, userId string, loanId string, amountDue f
 		Status:         status,
 	}
 
-	result := repo.CreateBillingSchedule(ctx, tx, newBillingSchedule)
+	result, err := repo.CreateBillingSchedule(ctx, tx, newBillingSchedule)
 	if err := tx.Commit(); err != nil {
 		log.Fatalf("Failed to commit billing schedule transaction: %v", err)
 		return domain.BillingSchedule{}, err
