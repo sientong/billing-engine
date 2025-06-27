@@ -46,7 +46,12 @@ At least the following methods to be implemented:
 
 ### Run the app
 
+##### In local machine
+
 ```go run .```
+#### In docker container
+
+```docker compose up -build -d```
 
 ### Call grpcurl service
 

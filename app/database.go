@@ -13,9 +13,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var conn = "postgres://postgres:099052@localhost:5432/billing-engine?sslmode=disable"
-
 func SetupDB() *sql.DB {
+
+	conn := os.Getenv("DATABASE_URL")
+	if conn == "" {
+		conn = "postgres://postgres:099052@localhost:5432/billing-engine?sslmode=disable"
+	}
+
+	log.Println(conn)
 
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
